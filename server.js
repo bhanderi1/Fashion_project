@@ -19,6 +19,7 @@ app.get('/', (req, res) => {
 app.use('/api', require('./routes/users/index.routes'))
 app.use('/api/admin', require('./routes/admin/index.routes'))
 
+
 app.listen(port, () => {
     mongoose
        .connect(process.env.MONGO_URL)

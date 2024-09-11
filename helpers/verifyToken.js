@@ -8,9 +8,7 @@ exports.verifyToken = async (req, res, next) => {
         if (!authorization) {
             return res.status(401).json({ message: 'Not Authorizationed' });
         }
-
         let token = authorization.split(" ")[1];
-
         let { userId } = await jwt.verify(token, process.env.JWT_SECRATE);
 
         let user = await User.findOne({ _id: userId, isDelete: false });

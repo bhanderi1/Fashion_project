@@ -1,36 +1,74 @@
 const User = require('../../model/user.model')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const { verifyOTP } = require('../../helpers/opt_verify')
+const { sendOtpEmail } = require('../../helpers/nodemailer')
+const { generateOTP, otpExpiresIn } = require('../../helpers/opt_genreator')
 
 exports.signup = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, profileImage, role } = req.body
-        let imagePath = " "
-        let user = await User.findOne({ email: email, isDelete: false })
+        let {firstName,lastName, email,password,role,profileIameg }= req.body
+        let user = await User.findOne({ email:email, isDelete: false });
         if (user) {
-            return res.json({ message: 'user already Register.' })
+            return res.status(400).json({ message: 'User already registered.' });
         }
+        
+        const otp = generateOTP();
+        const otpExpires = otpExpiresIn();
+        
+        let imagePath = " ";
         if (req.file) {
-            imagePath = req.file.path.replace(/\\/g, "/")
+            imagePath = req.file.path.replace(/\\/g, "/");
         }
-        let hashPassword = await bcrypt.hash(password, 10)
-        user = await User.create({ firstName: firstName, lastName: lastName, email: email, password: hashPassword, profileImage: imagePath, role: role })
-        res.status(201).json({ user, message: 'user Signup successfullly...' })
+        const hashPassword = await bcrypt.hash(req.body.password, 10);
+        const hashotp = await bcrypt.hash(req.body.otp, 10);
+        await sendOtpEmail(email, otp);
+        user = await User.create({
+           firtName:firstName,
+           lastName:lastName,
+           email:email,
+           role:role,
+           password: hashPassword,
+           profileImage: imagePath,
+           otp:hashotp
+        });
+        res.status(201).json({ message: 'OTP sent to your email. Please verify to complete registration.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
     }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ message: 'Server Error' })
+};
+
+exports.verifyotpAndSignup = async (req, res) => {
+    try {
+        const { otp } = req.body;
+        const user = await User.findOne({_id:req.user._id, isDelete: false });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        if(otp !== user.OTP) 
+        {
+            return res.status(400).json({message: 'Invalid or expired OTP.' })
+        }
+
+        // const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
+
+        res.status(200).json({ message: 'User registered successfully.', token });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server Error' });
     }
-}
+};
+
 
 exports.signIn = async (req, res) => {
     try {
-        const { email, password } = req.body
-        let user = await User.findOne({ email: email, isDelete: false })
+        let user = await User.findOne({ email: req.body.email,isDelete: false })
         if (!user) {
             return rea.json({ message: 'User Not found...' })
         }
-        let comparePassword = await bcrypt.compare(password, user.password)
+        let comparePassword = await bcrypt.compare(req.body.password, user.password)
         if (!comparePassword) {
             return res.json({ message: 'Email or password does not matched...' })
         }

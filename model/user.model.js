@@ -14,25 +14,36 @@ const userSchema = new mongoose.Schema(
         email: {
             type: String,
             require: true,
-            unique: true
+            unique: true,
+            match: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/
         },
-        age:{
-            type:Number
+        age: {
+            type: Number
         },
         password: {
             type: String,
             require: true
         },
-        Address:{
-            type:String
+        Address: {
+            type: String
         },
-        role:{
-            type:String,
-            enum:['admin', 'user'],
-            default:'user'
+        role: {
+            type: String,
+            enum: ['admin', 'user'],
+            default: 'user'
         },
-        profileImage:{
-            type:String,
+        profileImage: {
+            type: String,
+        },
+        isVerified: {
+            type: Boolean,
+            default: false
+        },
+        otp:{
+            type: String
+        },
+        otpExpires: {
+            type: Date
         },
         isDelete: {
             type: Boolean,

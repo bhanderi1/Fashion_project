@@ -3,10 +3,11 @@ const userRoutes = express.Router()
 const { verifyToken } = require('../../helpers/verifyToken')
 const { verifyUser } = require('../../helpers/verifyUser')
 const { upload } = require('../../helpers/imageUpload')
-const { signup, signIn, updateUser, userProfile, deleteUser, resetPassword, sigout } = require('../../Controller/user/user.controller')
+const { signup, signIn, updateUser, userProfile, deleteUser, resetPassword, sigout, verifyotpAndSignup } = require('../../Controller/user/user.controller')
 
 
 userRoutes.post('/signup',upload.single('profileImage'), signup)
+// userRoutes.post('/verify-otp',verifyotpAndSignup)
 userRoutes.post('/signin', signIn)  //login
 userRoutes.get('/user-profile', verifyToken, userProfile)
 userRoutes.put('/update-user', verifyToken, updateUser)
