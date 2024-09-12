@@ -24,7 +24,7 @@ exports.addCart = async (req, res) => {
             product: product,
             user: userId,
             quantity: quantity,
-            price: products.price 
+            price: product.price 
         });
 
         res.json({ message: "Cart added successfully", cart });
@@ -52,7 +52,7 @@ exports.getAllCart = async (req, res) => {
 
 exports.updateCart = async (req, res) => {
     try {
-        let cart = await Cart.findOne({ _id: req.query.cartId });
+        let cart = await Cart.findOne({ _id: req.query.cartId , isDelete:false });
 
         if (!cart) {
             return res.status(404).json({ message: "Cart not found." });

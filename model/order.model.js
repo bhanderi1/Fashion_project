@@ -21,28 +21,28 @@ const orderSchema = new mongoose.Schema({
     }],
     subTotal:{
         type:Number,
-        required:true
+        // required:true
     },
     deliveryAddress: {
         city: {
           type: String,
-          required: true,
+        //   required: true,
         },
         district: {
           type: String,
-          required: true,
+        //   required: true,
         },
         vilage:{
             type:String,
-            required:true,
+            // required:true,
         },
         road:{
             type:String,
-            require:true
+            // require:true
         },
         homeNumber:{
             type:String,
-            require:true
+            // require:true
         }
       },
       isDeleted: {

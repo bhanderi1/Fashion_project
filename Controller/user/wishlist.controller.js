@@ -9,7 +9,7 @@ exports.addWishlist = async (req, res) => {
         if (!product) {
             return res.status(404).json({ message: 'This item is not available' });
         }
-
+        
         const existingWishlist = await Wishlist.findOne({ user:req.user._id, product: productId });
 
         if (existingWishlist) {
