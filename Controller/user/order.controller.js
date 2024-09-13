@@ -1,6 +1,6 @@
 const Cart = require('../../model/cart.model')
 const Order = require('../../model/order.model')
-
+const messages = require('../../helpers/messge')
 
 exports.addNewOrder = async (req, res) => {
     try {
@@ -12,7 +12,7 @@ exports.addNewOrder = async (req, res) => {
         }).populate({ path: "product" })
 
         if (carts.length === 0) {
-            return res.json({ message: "not found cart" })
+            return res.json({ message:messages.CART_NOT_FOUND })
         }
 
         let orderItems = carts.map((item) => ({
@@ -40,10 +40,10 @@ exports.addNewOrder = async (req, res) => {
         })
 
         await Cart.updateMany({ user: req.user._id, isDelete: false }, { isDelete: true })
-        res.json({ message: "order places", order })
+        res.json({ message: messages.ORDER_PLACE, order })
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: " internal server error" })
+        res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR })
     }
 }
 
@@ -51,13 +51,13 @@ exports.deleteOrder = async (req, res) => {
     try {
         let orderId = req.body._id
         if (!orderId) {
-            return res.status(404).json({ message: "order not found..." })
+            return res.status(404).json({ message:  messages.ORDER_NOT_FOUND})
         }
-        res.status(200).json({ message: "order Delete Succesfully..." })
+        res.status(200).json({ message: messages.ORDER_DELETE})
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ message: " internal server error" })
+        res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR })
     }
 }
 exports.updateDeliveryAddress = async (req, res) => {
@@ -67,7 +67,7 @@ exports.updateDeliveryAddress = async (req, res) => {
         const order = await Order.find({ user: req.user._id, isDelete: false })
 
         if (!order) {
-            return res.status(404).json({ message: "order not found..." })
+            return res.status(404).json({ message:  messages.ORDER_NOT_FOUND})
         }
 
         order.deliveryAddress = {
@@ -78,10 +78,10 @@ exports.updateDeliveryAddress = async (req, res) => {
             homeNumber: homeNumber
         }
 
-        res.status(200).json({ order, message: 'delivery address updated successfully...' })
+        res.status(200).json({ order, message: messages.UPDATE_ADDRESS })
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ message: 'Server Error' })
+        res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR })
     }
 }

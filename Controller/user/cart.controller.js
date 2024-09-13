@@ -1,5 +1,6 @@
 const Cart = require('../../model/cart.model')
 const Product = require('../../model/product.model')
+const messages = require('../../helpers/messge')
 
 exports.addCart = async (req, res) => {
     try {
@@ -9,7 +10,7 @@ exports.addCart = async (req, res) => {
         let products = await Product.findById(product);
 
         if (!products) {
-            return res.json({ message: "Product not found." });
+            return res.json({ message: messages.PRODUCT_NOT_FOUND });
         }
         let cart = await Cart.findOne({
             product: product,
@@ -17,21 +18,21 @@ exports.addCart = async (req, res) => {
         });
 
         if (cart) {
-            return res.json({ message: "Product is already available in your cart." });
+            return res.json({ message: messages.CART_ALREADY_EXIST });
         }
 
         cart = await Cart.create({
             product: product,
             user: userId,
             quantity: quantity,
-            price: product.price 
+            price: product.price
         });
 
-        res.json({ message: "Cart added successfully", cart });
+        res.json({ message: messages.CART_ADDED, cart });
 
     } catch (err) {
         console.log(err);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR });
     }
 };
 
@@ -39,58 +40,58 @@ exports.addCart = async (req, res) => {
 exports.getAllCart = async (req, res) => {
     try {
         let cart = await Cart.find({ user: req.user._id, isDelete: false })
-        if(!cart){
-            return res.json({message:"cart not found..."})
+        if (!cart) {
+            return res.json({ message: messages.CART_NOT_FOUND })
         }
         res.json(cart)
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ message: 'internal server error' })
+        res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR })
     }
 }
 
 exports.updateCart = async (req, res) => {
     try {
-        let cart = await Cart.findOne({ _id: req.query.cartId , isDelete:false });
+        let cart = await Cart.findOne({ _id: req.query.cartId, isDelete: false });
 
         if (!cart) {
-            return res.status(404).json({ message: "Cart not found." });
+            return res.status(404).json({ message: messages.CART_NOT_FOUND });
         }
         let additionalQuantity = req.body.quantity || 1;
         let newQuantity = cart.quantity + additionalQuantity;
 
-        cart = await Cart.findByIdAndUpdate(  cart._id,{ $set:{quantity: newQuantity}},{ new:true} );
+        cart = await Cart.findByIdAndUpdate(cart._id, { $set: { quantity: newQuantity } }, { new: true });
 
-        res.status(202).json({ cart, message: 'Cart updated successfully.' });
+        res.status(202).json({ cart, message: messages.CART_UPDATED });
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ message: 'internal server error' })
+        res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR })
     }
 }
 
 exports.deleteCart = async (req, res) => {
     try {
-        let cart = await Cart.findOne({ _id:req.query.cartId, isDelete: false })
+        let cart = await Cart.findOne({ _id: req.query.cartId, isDelete: false })
         if (!cart) {
-            return res.status(404).json({ message: "cart not found" })
+            return res.status(404).json({ message: messages.CART_NOT_FOUND })
         }
         cart = await Cart.findByIdAndUpdate(cart._id, { isDelete: true }, { new: true })
-        res.status(200).json({ message: "cart delete succesfully..." })
+        res.status(200).json({ message: messages.CART_DELETE })
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ message: "internal server error" })
+        res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR })
     }
 }
 
-exports.updateShippingAddress = async(req,res) =>{
-    try{
-    
+exports.updateShippingAddress = async (req, res) => {
+    try {
+
     }
     catch (err) {
         console.log(err);
-        res.status(500).json({ message: "internal server error" })
+        res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR })
     }
 }
