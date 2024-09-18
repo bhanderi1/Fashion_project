@@ -18,7 +18,7 @@ exports.addWishlist = async (req, res) => {
         });
 
         if (wishlistItem) {
-            return res.status(400).json({ message: messages.PRODUCT_ALREADY_EXIST_ });
+            return res.status(400).json({ message: messages.PRODUCT_ALREADY_EXIST });
         }
         wishlistItem = await Wishlist.create({
             product: product,

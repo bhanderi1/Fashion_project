@@ -86,12 +86,3 @@ exports.deleteCart = async (req, res) => {
     }
 }
 
-exports.updateShippingAddress = async (req, res) => {
-    try {
-
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR })
-    }
-}

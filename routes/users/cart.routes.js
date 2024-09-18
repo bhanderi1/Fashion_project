@@ -9,5 +9,4 @@ cartRoutes.get('/get-all-cart',verifyToken, getAllCart)
 cartRoutes.put('/update-cart',verifyToken, updateCart)
 cartRoutes.delete('/delete-cart', deleteCart)
 
-
 module.exports = cartRoutes;

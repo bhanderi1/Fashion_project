@@ -169,3 +169,12 @@ exports.sigout = async (req, res) => {
         res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR  })
     }
 }
+
+// exports.forgetPassword = async(req,res)=>{
+//     try{
+
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).json({ message: messages.INTERNAL_SERVER_ERROR  })
+//     }
+// }
