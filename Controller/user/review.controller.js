@@ -2,11 +2,16 @@ const Product = require('../../model/product.model');
 const Review = require('../../model/review.model');
 const messages = require('../../helpers/messge')
 
+const ProductServices = require('../../services/productService')
+const productServices = new ProductServices()
+const ReviewServices = require('../../services/reviewService')
+const reviewServices = new ReviewServices()
+
 exports.addReview = async (req, res) => {
     try {
         let { product, review, rating } = req.body;
 
-        let existingProduct = await Product.findOne({ _id: product, isDelete: false });
+        let existingProduct = await productServices.getProduct({ _id: product, isDelete: false });
         if (!existingProduct) {
             return res.status(404).json({ message: messages.PRODUCT_NOT_FOUND });
         }
@@ -14,7 +19,7 @@ exports.addReview = async (req, res) => {
         if (existingReview) {
             return res.status(400).json({ message: messages.ALREADY_REVIEW_PRODUCT});
         }
-        const newReview = await Review.create({ user: req.user._id, product, review, rating });
+        const newReview = await reviewServices.addNewReview({ user: req.user._id, product, review, rating });
         res.status(201).json({ message: messages.REVIEW_ADDED, review: newReview });
     } catch (error) {
         console.error(error);
@@ -25,7 +30,7 @@ exports.addReview = async (req, res) => {
 
 exports.otherReview = async (req, res) => {
     try {
-        const review = await Review.find({ isDelete: false })
+        const review = await reviewServices.getReviews({ isDelete: false })
         res.status(200).json(review)
     }
     catch (error) {
@@ -36,7 +41,7 @@ exports.otherReview = async (req, res) => {
 
 exports.myReview = async (req, res) => {
     try {
-        const review = await Review.findOne({ user: req.user._id, isDelete: false })
+        const review = await reviewServices.getReview({ user: req.user._id, isDelete: false })
         if (!review) {
             return res.status(404).json({ message: messages.REVIEW_NOT_FOUND });
         }
@@ -51,7 +56,7 @@ exports.myReview = async (req, res) => {
 exports.updateReview = async (req, res) => {
     try {
         const { reviewId } = req.query;
-        let review = await Review.findOne({ _id: reviewId, isDelete: false });
+        let review = await reviewServices.getReview({ _id: reviewId, isDelete: false });
         if (!review) {
             return res.status(404).json({ message: messages.PRODUCT_NOT_FOUND  });
         }
@@ -65,7 +70,7 @@ exports.updateReview = async (req, res) => {
 
 exports.deleteReview = async (req, res) => {
     try {
-        let review = await Review.findOne({ reviewId: req.query._Id, isDelete: false });
+        let review = await reviewServices.getReview({ reviewId: req.query._Id, isDelete: false });
         if (!review) {
             return res.status(404).json({ message:  messages.PRODUCT_NOT_FOUND  });
         }

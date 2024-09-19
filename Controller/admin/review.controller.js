@@ -1,9 +1,12 @@
 const Review = require('../../model/review.model');
 const messages = require('../../helpers/messge')
 
+const ReviewServices = require('../../services/reviewService')
+const reviewServices = new ReviewServices()
+
 exports.getAllReview = async (req, res) => {
     try {
-        const review = await Review.find({isDelete: false })
+        const review = await reviewServices.getReviews({isDelete: false })
         res.status(200).json(review)
     }
     catch (error) {
@@ -14,7 +17,7 @@ exports.getAllReview = async (req, res) => {
 
 exports.getReview = async (req, res) => {
     try {
-        const review = await Review.findOne({user: req.user._id,isDelete: false })
+        const review = await reviewServices.getReview({user: req.user._id,isDelete: false })
         if (!review) {
             return res.status(404).json({ error: messages.PRODUCT_NOT_FOUND });
         }

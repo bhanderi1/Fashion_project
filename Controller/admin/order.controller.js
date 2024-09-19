@@ -1,9 +1,13 @@
 const Order = require('../../model/order.model')
 const messages = require('../../helpers/messge')
 
+const OrderServices = require('../../services/orderService')
+const orderService = new OrderServices()
+
+
 exports.getOrder = async (req, res) => {
     try {
-        const order = await Order.findById({_id:req.query.orderId, isDelete:false})
+        const order = await orderService.getOrderById({_id:req.query.orderId, isDelete:false})
         if (!order) {
             return res.status(404).json({ message: messages.ORDER_NOT_FOUND });
         }

@@ -2,6 +2,12 @@ const Cart = require('../../model/cart.model')
 const Order = require('../../model/order.model')
 const messages = require('../../helpers/messge')
 
+const CartService = require('../../services/cartService')
+const cartService = new CartService()
+const OrderServices = require('../../services/orderService')
+const orderService = new OrderServices()
+
+
 exports.addNewOrder = async (req, res) => {
     try {
         const { city, district, village, road, homeNumber } = req.body
@@ -26,7 +32,7 @@ exports.addNewOrder = async (req, res) => {
         let amount = orderItems.reduce((total, item) => total += item.totalprice, 0)
         console.log(amount);
 
-        let order = await Order.create({
+        let order = await orderService.addNewOrder({
             user: req.user._id,
             items: orderItems,
             subTotal: amount,
@@ -39,7 +45,7 @@ exports.addNewOrder = async (req, res) => {
             }
         })
 
-        await Cart.updateMany({ user: req.user._id, isDelete: false }, { isDelete: true })
+        await cartService.updateMany({ user: req.user._id, isDelete: false }, { isDelete: true })
         res.json({ message: messages.ORDER_PLACE, order })
     } catch (err) {
         console.log(err);
@@ -64,7 +70,7 @@ exports.updateDeliveryAddress = async (req, res) => {
     try {
         const { city, district, village, road, homeNumber } = req.body
 
-        const order = await Order.find({ user: req.user._id, isDelete: false })
+        const order = await orderService.getOrders({ user: req.user._id, isDelete: false })
 
         if (!order) {
             return res.status(404).json({ message:  messages.ORDER_NOT_FOUND})

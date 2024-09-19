@@ -2,17 +2,23 @@ const Product = require('../../model/product.model');
 const Wishlist = require('../../model/wishlist.model'); // Capitalized for consistency
 const messages = require('../../helpers/messge')
 
+const WishlistServices = require('../../services/wishlistSevice')
+const wishlistService = new WishlistServices()
+const ProductServices = require('../../services/productService')
+const productServices = new ProductServices()
+
+
 exports.addWishlist = async (req, res) => {
     try {
-        const { product } = req.body; 
-        const userId = req.user._id;
+        let { product } = req.body; 
+        let userId = req.user._id;
 
-        let productExists = await Product.findById(product);
+        let productExists = await productServices.getProductById(product);
         if (!productExists) {
-            return res.status(404).json({ message:  messages. PRODUCT_NOT_FOUND });
+            return res.status(404).json({ message:  messages.PRODUCT_NOT_FOUND });
         }
 
-        let wishlistItem = await Wishlist.findOne({
+        let wishlistItem = await wishlistService.getWishlist({
             product: product,
             user: userId,
         });
@@ -20,9 +26,10 @@ exports.addWishlist = async (req, res) => {
         if (wishlistItem) {
             return res.status(400).json({ message: messages.PRODUCT_ALREADY_EXIST });
         }
-        wishlistItem = await Wishlist.create({
+        wishlistItem = await wishlistService.addNeWishlist({
             product: product,
             user: userId,
+            ...req.body
         });
 
         return res.status(200).json({ message: messages.PRODUCT_ADDE_WISHLIST, wishlistItem });
@@ -37,7 +44,7 @@ exports.addWishlist = async (req, res) => {
 exports.deleteWishlist = async (req, res) => {
     try {
         const { productId } = req.body;
-        const wishlistItem = await Wishlist.findOneAndDelete({ user:req.user._id, product: productId });
+        const wishlistItem = await wishlistService.deleteWishlist({ user:req.user._id, product: productId });
 
         if (!wishlistItem) {
             return res.status(404).json({ message:messages.PRODUCT_NOT_FOUND_WISHLIST });

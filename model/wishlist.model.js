@@ -3,11 +3,11 @@ const mongoose = require('mongoose')
 const wishlistSchema = new mongoose.Schema({
     user:{
         type:mongoose.Schema.ObjectId,
-        ref:'users'
+        ref:'user'
      },
      product:{
          type:mongoose.Schema.ObjectId,
-         ref:'products'
+         ref:'product'
      },
      isDelete:{
       type:Boolean,

@@ -2,9 +2,12 @@ const jwt = require('jsonwebtoken')
 const User = require('../../model/user.model')
 const messages = require('../../helpers/messge')
 
+const UserServices = require('../../services/userService')
+const userService = new UserServices()
+
 exports.getUser = async(req,res)=>{
     try{
-          let user = await User.findById({_id:req.query.userId,isDelete:false})
+          let user = await userService.getUserById({_id:req.query.userId,isDelete:false})
           if(!user){
             return res.json({message:messages.USER_NOT_FOUND})
           }
@@ -18,7 +21,7 @@ exports.getUser = async(req,res)=>{
 
 exports.getAllUser = async(req,res)=>{
     try{
-         let user = await User.find({isDelete:false})
+         let user = await userService.getUser({isDelete:false})
          res.json(user)
     }
     catch (err) {

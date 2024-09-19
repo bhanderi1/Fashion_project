@@ -4,6 +4,8 @@ const messages = require('../../helpers/messge')
 exports.getCart = async (req, res) => {
     try {
         let cart = await Cart.findById({_id:req.query.cartId, isDelete:false})
+        .populate("product", "title , description , price")
+        .exec();
         if (!cart) {
             return res.json({ message: messages.CART_NOT_FOUND })
         }

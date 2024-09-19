@@ -5,10 +5,14 @@ const { sendOtpEmail } = require('../../helpers/nodemailer')
 const { generateOTP, otpExpiresIn } = require('../../helpers/opt_genreator')
 const messages = require('../../helpers/messge')
 
+const UserServices = require('../../services/userService')
+const userService = new UserServices()
+
+
 exports.signup = async (req, res) => {
     try {
         let { firstName, lastName, email, password, role, profileImage } = req.body;
-        let user = await User.findOne({ email: email, isDelete: false });
+        let user = await UserServices.getUser({ email: email, isDelete: false });
         if (user) {
             return res.status(400).json({ message: messages.USER_ALREADY_EXIST  });
         }
@@ -26,7 +30,7 @@ exports.signup = async (req, res) => {
         console.log(hashotp)
         await sendOtpEmail(email, otp);
 
-        user = await User.create({
+        user = await userService.addNewUser({
             firstName: firstName,
             lastName: lastName,
             email: email,
@@ -46,7 +50,7 @@ exports.signup = async (req, res) => {
 
 exports.verifyOtpAndSignup = async (req, res) => {
     try {
-        const user = await User.findOne({ email: req.body.email, isDelete: false });
+        const user = await userService.getUser({ email: req.body.email, isDelete: false });
         if (!user) {
             return res.status(404).json({ message:  messages.USER_NOT_FOUND});
         }
@@ -70,7 +74,7 @@ exports.verifyOtpAndSignup = async (req, res) => {
 
 exports.signIn = async (req, res) => {
     try {
-        let user = await User.findOne({ email: req.body.email, isDelete: false })
+        let user = await userService.getUser({ email: req.body.email, isDelete: false })
         if (!user) {
             return res.json({ message:  messages.USER_NOT_FOUND })
         }
@@ -90,7 +94,7 @@ exports.signIn = async (req, res) => {
 
 exports.userProfile = async (req, res) => {
     try {
-        let user = await User.findOne({ _id:req.user._id })
+        let user = await userService.getUser({ _id:req.user._id })
         res.status(200).json({ message: messages.SHOW_USER_PROFILE, user })
         //   res.json(req.user)
     }
@@ -104,7 +108,7 @@ exports.userProfile = async (req, res) => {
 exports.resetPassword = async (req, res) => {
     try {
         let user = req.user
-        user = await User.findById(req.user._id)
+        user = await userService.getUserById(req.user._id)
         if (!user) {
             return res.status(404).json({ message:  messages.USER_NOT_FOUND })
         }
@@ -134,7 +138,7 @@ exports.resetPassword = async (req, res) => {
 exports.updateUser = async (req, res) => {
     try {
         let user = req.user
-        user = await User.findByIdAndUpdate(user._id, { $set: { ...req.body } }, { new: true })
+        user = await userService.updateUser(user._id, { $set: { ...req.body } }, { new: true })
         res.status(200).json({ user, message:messages.PASSWORD_UPDATE_SUCCESSFULLY });
     }
     catch (err) {
@@ -149,7 +153,7 @@ exports.deleteUser = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message:  messages.USER_NOT_FOUND })
         }
-        user = await User.findByIdAndUpdate(user._id, { isDelete: true }, { new: true })
+        user = await userService.updateUser(user._id, { isDelete: true }, { new: true })
         res.status(200).json({ message: messages.USER_DELETE_SUCCESSFULLY })
     }
     catch (err) {
