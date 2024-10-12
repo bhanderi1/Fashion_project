@@ -126,7 +126,7 @@ exports.resetPassword = async (req, res) => {
         }
 
         const hashedNewPassword = await bcrypt.hash(newPassword, 10)
-        user = await User.findByIdAndUpdate(req.user._id, { password: hashedNewPassword })
+        user = await userService.updateUser(req.user._id, { password: hashedNewPassword })
         res.status(200).json({ message: messages.PASSWORD_UPDATE_SUCCESSFULLY, user })
     }
     catch (err) {

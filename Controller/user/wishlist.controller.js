@@ -49,7 +49,6 @@ exports.deleteWishlist = async (req, res) => {
         if (!wishlistItem) {
             return res.status(404).json({ message:messages.PRODUCT_NOT_FOUND_WISHLIST });
         }
-
         res.status(200).json({ message: messages.PRODUCT_DELETE_WISHLIST});
     } catch (error) {
         res.status(500).json({ message:  messages.INTERNAL_SERVER_ERROR  });
