@@ -167,6 +167,7 @@ exports.sigout = async (req, res) => {
         const token = await jwt.sign({ userId: req.user._id }, process.env.JWT_SECRATE)
         console.log('user signed out');
         return res.status(200).json({ message: messages.SIGN_OUT_SUCCESSFULLY, token })
+        
     }
     catch (err) {
         console.log(err);

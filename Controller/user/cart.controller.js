@@ -12,7 +12,7 @@ exports.addCart = async (req, res) => {
         const { product, quantity } = req.body;
         const userId = req.user._id;
 
-        let products = await productServices.getProductById(product);
+        let products = await producYtServices.getProductById(product);
 
         if (!products) {
             return res.json({ message: messages.PRODUCT_NOT_FOUND });
